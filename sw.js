@@ -58,6 +58,10 @@ function urlB64ToUint8Array(base64String) {
 
 
 self.addEventListener('push', function (event) {
+
+  const swClients = self.clients;
+
+
   event.waitUntil(
     self.clients.matchAll().then(function (clientList) {
 
@@ -78,7 +82,7 @@ self.addEventListener('push', function (event) {
       return self.registration.showNotification('ServiceWorker Cookbook', {
         body: notificationMessage,
       });
-      
+
     })
   );
 });
