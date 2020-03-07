@@ -58,32 +58,33 @@ function urlB64ToUint8Array(base64String) {
 
 
 self.addEventListener('push', function (event) {
-
-  const swClients = self.clients;
-
-
   event.waitUntil(
-    self.clients.matchAll().then(function (clientList) {
 
-      var focused = clientList.some(function (client) {
-        return client.focused;
-      });
-
-      var notificationMessage;
-      if (focused) {
-        notificationMessage = 'You\'re still here, thanks!';
-      } else if (clientList.length > 0) {
-        notificationMessage = 'You haven\'t closed the page, ' +
-          'click here to focus it!';
-      } else {
-        notificationMessage = 'You have closed the page, ' +
-          'click here to re-open it!';
-      }
-      return self.registration.showNotification('ServiceWorker Cookbook', {
-        body: notificationMessage,
-      });
-
+    self.clients.matchAll().then(clients => {
+      clients.forEach(client => console.log('Clinets', client));
     })
+
+    // self.clients.matchAll().then(function (clientList) {
+
+    //   var focused = clientList.some(function (client) {
+    //     return client.focused;
+    //   });
+
+    //   var notificationMessage;
+    //   if (focused) {
+    //     notificationMessage = 'You\'re still here, thanks!';
+    //   } else if (clientList.length > 0) {
+    //     notificationMessage = 'You haven\'t closed the page, ' +
+    //       'click here to focus it!';
+    //   } else {
+    //     notificationMessage = 'You have closed the page, ' +
+    //       'click here to re-open it!';
+    //   }
+    //   return self.registration.showNotification('ServiceWorker Cookbook', {
+    //     body: notificationMessage,
+    //   });
+
+    // })
   );
 });
 
@@ -111,4 +112,18 @@ self.addEventListener('pushsubscriptionchange', function (event) {
         console.log('[Service Worker] New subscription: ', newSubscription);
       })
   );
+});
+
+self.addEventListener('activate', event => {
+  event.waitUntil(self.clients.claim().then(() => {
+    // See https://developer.mozilla.org/en-US/docs/Web/API/Clients/matchAll
+    return self.clients.matchAll({ type: 'window' });
+  }).then(clients => {
+    return clients.map(client => {
+      // Check to make sure WindowClient.navigate() is supported.
+      if ('navigate' in client) {
+        return client.navigate('activated.html');
+      }
+    });
+  }));
 });
