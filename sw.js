@@ -42,21 +42,49 @@ function urlB64ToUint8Array(base64String) {
   return outputArray;
 }
 
-self.addEventListener('push', function(event) {
-  console.log('[Service Worker] Push Received.');
-  console.log(`[Service Worker] Push had this data: "${event.data.text()}"`);
+// self.addEventListener('push', function(event) {
+//   console.log('[Service Worker] Push Received.');
+//   console.log(`[Service Worker] Push had this data: "${event.data.text()}"`);
 
-  const title = 'Push Codelab';
-  const options = {
-    body: 'Yay it works.',
-    icon: 'images/icon.png',
-    badge: 'images/badge.png'
-  };
+//   const title = 'Push Codelab';
+//   const options = {
+//     body: 'Yay it works.',
+//     icon: 'images/icon.png',
+//     badge: 'images/badge.png'
+//   };
 
-  event.waitUntil(self.registration.showNotification(title, options));
+//   event.waitUntil(self.registration.showNotification(title, options));
+// });
+
+
+self.addEventListener('push', function (event) {
+  event.waitUntil(
+    self.clients.matchAll().then(function (clientList) {
+
+      var focused = clientList.some(function (client) {
+        return client.focused;
+      });
+
+      var notificationMessage;
+      if (focused) {
+        notificationMessage = 'You\'re still here, thanks!';
+      } else if (clientList.length > 0) {
+        notificationMessage = 'You haven\'t closed the page, ' +
+          'click here to focus it!';
+      } else {
+        notificationMessage = 'You have closed the page, ' +
+          'click here to re-open it!';
+      }
+      return self.registration.showNotification('ServiceWorker Cookbook', {
+        body: notificationMessage,
+      });
+      
+    })
+  );
 });
 
-self.addEventListener('notificationclick', function(event) {
+
+self.addEventListener('notificationclick', function (event) {
   console.log('[Service Worker] Notification click Received.');
 
   event.notification.close();
@@ -66,7 +94,7 @@ self.addEventListener('notificationclick', function(event) {
   );
 });
 
-self.addEventListener('pushsubscriptionchange', function(event) {
+self.addEventListener('pushsubscriptionchange', function (event) {
   console.log('[Service Worker]: \'pushsubscriptionchange\' event fired.');
   const applicationServerKey = urlB64ToUint8Array(applicationServerPublicKey);
   event.waitUntil(
@@ -74,9 +102,9 @@ self.addEventListener('pushsubscriptionchange', function(event) {
       userVisibleOnly: true,
       applicationServerKey: applicationServerKey
     })
-    .then(function(newSubscription) {
-      // TODO: Send to application server
-      console.log('[Service Worker] New subscription: ', newSubscription);
-    })
+      .then(function (newSubscription) {
+        // TODO: Send to application server
+        console.log('[Service Worker] New subscription: ', newSubscription);
+      })
   );
 });
