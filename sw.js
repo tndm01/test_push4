@@ -42,6 +42,10 @@ function urlB64ToUint8Array(base64String) {
   return outputArray;
 }
 
+self.addEventListener('install', function (event) {
+  event.waitUntil(self.skipWaiting()); // Activate worker immediately
+});
+
 // Push Notification Event Handler
 self.addEventListener('push', function (event) {
 
@@ -54,10 +58,8 @@ self.addEventListener('push', function (event) {
       type: 'window'
     })
       .then(function (windowClients) {
-        debugger
         // If no page instances show notification
         if (!windowClients.length) {
-
           // Get subscription key to call api
           return self.registration
             .pushManager
@@ -67,7 +69,7 @@ self.addEventListener('push', function (event) {
 
                 // Get push message data
                 var token = encodeURIComponent(String(subscription.endpoint).split('/').pop());
-                var url = 'api/push/data?token=' + token + '&type=' + getPushDeviceType();
+                var url = 'api/push/data?token=' + token;
                 return self.fetch(url, { credentials: 'include' })
                   .then(function (response) {
 
@@ -169,3 +171,4 @@ self.addEventListener('activate', event => {
     });
   }));
 });
+
