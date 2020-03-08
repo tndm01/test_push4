@@ -58,34 +58,43 @@ function urlB64ToUint8Array(base64String) {
 
 
 self.addEventListener('push', function (event) {
+
   event.waitUntil(
-
-    self.clients.matchAll().then(clients => {
-      clients.forEach(client => console.log('Clinets', client));
+    clients.matchAll({includeUncontrolled: true, type: 'window'})
+    .then( windowClients => {
+      console.log('tét', windowClients);
     })
-
-    // self.clients.matchAll().then(function (clientList) {
-
-    //   var focused = clientList.some(function (client) {
-    //     return client.focused;
-    //   });
-
-    //   var notificationMessage;
-    //   if (focused) {
-    //     notificationMessage = 'You\'re still here, thanks!';
-    //   } else if (clientList.length > 0) {
-    //     notificationMessage = 'You haven\'t closed the page, ' +
-    //       'click here to focus it!';
-    //   } else {
-    //     notificationMessage = 'You have closed the page, ' +
-    //       'click here to re-open it!';
-    //   }
-    //   return self.registration.showNotification('ServiceWorker Cookbook', {
-    //     body: notificationMessage,
-    //   });
-
-    // })
   );
+
+
+  // event.waitUntil(
+
+  //   self.clients.matchAll().then(clients => {
+  //     clients.forEach(client => console.log('Clinets', client));
+  //   })
+
+  //   // self.clients.matchAll().then(function (clientList) {
+
+  //   //   var focused = clientList.some(function (client) {
+  //   //     return client.focused;
+  //   //   });
+
+  //   //   var notificationMessage;
+  //   //   if (focused) {
+  //   //     notificationMessage = 'You\'re still here, thanks!';
+  //   //   } else if (clientList.length > 0) {
+  //   //     notificationMessage = 'You haven\'t closed the page, ' +
+  //   //       'click here to focus it!';
+  //   //   } else {
+  //   //     notificationMessage = 'You have closed the page, ' +
+  //   //       'click here to re-open it!';
+  //   //   }
+  //   //   return self.registration.showNotification('ServiceWorker Cookbook', {
+  //   //     body: notificationMessage,
+  //   //   });
+
+  //   // })
+  // );
 });
 
 
