@@ -47,96 +47,96 @@ self.addEventListener('install', function (event) {
 });
 
 // Push Notification Event Handler
-self.addEventListener('push', function (event) {
-
-  // Push Received
-  event.waitUntil(
-
-    // Check app page open
-    self.clients.matchAll({ // Line 50
-      // includeUncontrolled: true, // Error occuring when enabling this
-      type: 'window'
-    })
-      .then(function (windowClients) {
-        // If no page instances show notification
-        // if (!windowClients.length) {
-        //   // Get subscription key to call api
-
-        // } else {
-        //   return;
-        // }
-        return self.registration
-          .pushManager
-          .getSubscription()
-          .then(function (subscription) {
-            if (subscription) {
-
-              // Get push message data
-              var token = encodeURIComponent(String(subscription.endpoint).split('/').pop());
-              var url = 'api/push/data?token=' + token;
-              return self.fetch(url, { credentials: 'include' })
-                .then(function (response) {
-
-                  if (response.status === 200) {
-                    return response.json()
-                      .then(function (data) {
-                        if (data) {
-
-                          // Display notification
-                          return self.registration
-                            .showNotification('App Notifications', {
-                              'body': data.msg,
-                              'icon': data.img,
-                              'tag': 'app'
-                            });
-                        } else {
-                          return;
-                        }
-                      });
-                  } else {
-                    return self.registration
-                      .showNotification('Notifications', {
-                        'body': "Nhan Cute",
-                        'icon': '',
-                        'tag': 'app'
-                      });
-                  }
-                });
-            } else {
-              return;
-            }
-          });
-      })
-  );
-});
-
-
 // self.addEventListener('push', function (event) {
+
+//   // Push Received
 //   event.waitUntil(
 
-//     self.clients.matchAll().then(function (clientList) {
-
-//       var focused = clientList.some(function (client) {
-//         return client.focused;
-//       });
-
-//       var notificationMessage;
-//       if (focused) {
-//         notificationMessage = 'You\'re still here, thanks!';
-//       } else if (clientList.length > 0) {
-//         notificationMessage = 'You haven\'t closed the page, ' +
-//           'click here to focus it!';
-//       } else {
-//         notificationMessage = 'You have closed the page, ' +
-//           'click here to re-open it!';
-//       }
-//       return self.registration.showNotification('ServiceWorker Cookbook', {
-//         body: notificationMessage,
-//       });
-
+//     // Check app page open
+//     self.clients.matchAll({ // Line 50
+//       // includeUncontrolled: true, // Error occuring when enabling this
+//       type: 'window'
 //     })
+//       .then(function (windowClients) {
+//         // If no page instances show notification
+//         // if (!windowClients.length) {
+//         //   // Get subscription key to call api
+
+//         // } else {
+//         //   return;
+//         // }
+//         return self.registration
+//           .pushManager
+//           .getSubscription()
+//           .then(function (subscription) {
+//             if (subscription) {
+
+//               // Get push message data
+//               var token = encodeURIComponent(String(subscription.endpoint).split('/').pop());
+//               var url = 'api/push/data?token=' + token;
+//               return self.fetch(url, { credentials: 'include' })
+//                 .then(function (response) {
+
+//                   if (response.status === 200) {
+//                     return response.json()
+//                       .then(function (data) {
+//                         if (data) {
+
+//                           // Display notification
+//                           return self.registration
+//                             .showNotification('App Notifications', {
+//                               'body': data.msg,
+//                               'icon': data.img,
+//                               'tag': 'app'
+//                             });
+//                         } else {
+//                           return;
+//                         }
+//                       });
+//                   } else {
+//                     return self.registration
+//                       .showNotification('Notifications', {
+//                         'body': "Nhan Cute",
+//                         'icon': '',
+//                         'tag': 'app'
+//                       });
+//                   }
+//                 });
+//             } else {
+//               return;
+//             }
+//           });
+//       })
 //   );
 // });
+
+
+self.addEventListener('push', function (event) {
+  event.waitUntil(
+
+    self.clients.matchAll().then(function (clientList) {
+
+      var focused = clientList.some(function (client) {
+        return client.focused;
+      });
+
+      var notificationMessage;
+      if (focused) {
+        notificationMessage = 'You\'re still here, thanks!';
+      } else if (clientList.length > 0) {
+        notificationMessage = 'You haven\'t closed the page, ' +
+          'click here to focus it!';
+      } else {
+        notificationMessage = 'You have closed the page, ' +
+          'click here to re-open it!';
+      }
+      return self.registration.showNotification('ServiceWorker Cookbook', {
+        body: notificationMessage,
+      });
+
+    })
+  );
+});
 
 
 self.addEventListener('notificationclick', function (event) {
