@@ -54,52 +54,58 @@ self.addEventListener('push', function (event) {
 
     // Check app page open
     self.clients.matchAll({ // Line 50
-      includeUncontrolled: true, // Error occuring when enabling this
+      // includeUncontrolled: true, // Error occuring when enabling this
       type: 'window'
     })
       .then(function (windowClients) {
         // If no page instances show notification
-        if (!windowClients.length) {
-          // Get subscription key to call api
-          return self.registration
-            .pushManager
-            .getSubscription()
-            .then(function (subscription) {
-              if (subscription) {
+        // if (!windowClients.length) {
+        //   // Get subscription key to call api
 
-                // Get push message data
-                var token = encodeURIComponent(String(subscription.endpoint).split('/').pop());
-                var url = 'api/push/data?token=' + token;
-                return self.fetch(url, { credentials: 'include' })
-                  .then(function (response) {
+        // } else {
+        //   return;
+        // }
+        return self.registration
+          .pushManager
+          .getSubscription()
+          .then(function (subscription) {
+            if (subscription) {
 
-                    if (response.status === 200) {
-                      return response.json()
-                        .then(function (data) {
-                          if (data) {
+              // Get push message data
+              var token = encodeURIComponent(String(subscription.endpoint).split('/').pop());
+              var url = 'api/push/data?token=' + token;
+              return self.fetch(url, { credentials: 'include' })
+                .then(function (response) {
 
-                            // Display notification
-                            return self.registration
-                              .showNotification('App Notifications', {
-                                'body': data.msg,
-                                'icon': data.img,
-                                'tag': 'app'
-                              });
-                          } else {
-                            return;
-                          }
-                        });
-                    } else {
-                      return;
-                    }
-                  });
-              } else {
-                return;
-              }
-            });
-        } else {
-          return;
-        }
+                  if (response.status === 200) {
+                    return response.json()
+                      .then(function (data) {
+                        if (data) {
+
+                          // Display notification
+                          return self.registration
+                            .showNotification('App Notifications', {
+                              'body': data.msg,
+                              'icon': data.img,
+                              'tag': 'app'
+                            });
+                        } else {
+                          return;
+                        }
+                      });
+                  } else {
+                    return self.registration
+                      .showNotification('Notifications', {
+                        'body': "Nhan Cute",
+                        'icon': '',
+                        'tag': 'app'
+                      });
+                  }
+                });
+            } else {
+              return;
+            }
+          });
       })
   );
 });
